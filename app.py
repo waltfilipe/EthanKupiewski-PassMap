@@ -6,7 +6,7 @@ import numpy as np
 
 st.set_page_config(layout="wide")
 
-st.title("Pass Map")
+st.title("Pass Map + Estatísticas")
 
 # ==========================
 # Coordenadas
@@ -59,7 +59,7 @@ cords = [
 num_passes = 40
 coords = cords[:num_passes * 2]
 
-passes_errados = [19,22,29,40]
+passes_errados = [19, 22, 29, 40]
 
 # ==========================
 # DataFrame
@@ -83,13 +83,13 @@ for i in range(0, len(coords), 2):
 df = pd.DataFrame(passes)
 
 # ==========================
-# Métricas
+# Métricas base
 # ==========================
 goal_x = 120
 goal_y = 40
 
-def distancia_gol(x,y):
-    return np.sqrt((goal_x-x)**2 + (goal_y-y)**2)
+def distancia_gol(x, y):
+    return np.sqrt((goal_x - x)**2 + (goal_y - y)**2)
 
 df["dist_inicio"] = distancia_gol(df.x_start, df.y_start)
 df["dist_fim"] = distancia_gol(df.x_end, df.y_end)
@@ -98,6 +98,18 @@ df["ganho"] = df["dist_inicio"] - df["dist_fim"]
 
 df["progressivo"] = df["ganho"] >= 10
 df["errado"] = df["numero"].isin(passes_errados)
+
+# ==========================
+# CLASSIFICAÇÕES (ESSENCIAL)
+# ==========================
+df["certo"] = ~df["errado"]
+
+df["direita"] = df["x_end"] > df["x_start"]
+df["esquerda"] = df["x_end"] < df["x_start"]
+
+df["proprio_campo"] = df["x_start"] < 60
+df["campo_adversario"] = df["x_start"] >= 60
+df["ultimo_terco"] = df["x_end"] >= 80
 
 # ==========================
 # Plot
@@ -110,7 +122,6 @@ pitch = Pitch(
 
 fig, ax = pitch.draw(figsize=(10,7))
 
-# linha de progressão
 ax.axvline(x=80, color='#FFD54F', linewidth=1.5, alpha=0.25)
 
 for _, row in df.iterrows():
@@ -140,14 +151,16 @@ for _, row in df.iterrows():
     )
 
 # ==========================
-# Render no Streamlit
+# Mostrar gráfico
 # ==========================
 col1, col2, col3 = st.columns([1,2,1])
+
+with col2:
+    st.pyplot(fig)
 
 # ==========================
 # ESTATÍSTICAS
 # ==========================
-
 total = len(df)
 
 passes_certos = df["certo"].sum()
@@ -175,11 +188,9 @@ ca_certos = ca["certo"].sum()
 ca_errados = ca["errado"].sum()
 ca_perc = ca_certos / len(ca) * 100 if len(ca) > 0 else 0
 
-
 # ==========================
 # DASHBOARD
 # ==========================
-
 st.subheader("📊 Estatísticas de Passe")
 
 col1, col2, col3, col4 = st.columns(4)
@@ -210,6 +221,3 @@ with col9:
     st.markdown("### Campo adversário")
     st.metric("Precisão", f"{ca_perc:.1f}%")
     st.write(f"Certos: {ca_certos} | Errados: {ca_errados}")
-
-with col2:
-    st.pyplot(fig)
