@@ -195,29 +195,29 @@ st.subheader("📊 Estatísticas de Passe")
 
 col1, col2, col3, col4 = st.columns(4)
 
-col1.metric("Total de passes", total)
-col2.metric("Precisão", f"{perc_certos:.1f}%")
-col3.metric("Progressivos", prog_total)
+col1.metric("Total passes", total)
+col2.metric("%Acc", f"{perc_certos:.1f}%")
+col3.metric("Progressive Passes", prog_total)
 col4.metric("% Progressivos", f"{perc_prog:.1f}%")
 
 st.divider()
 
 col5, col6, col7 = st.columns(3)
 
-col5.metric("→ Direita", passes_direita)
-col6.metric("← Esquerda", passes_esquerda)
-col7.metric("Último terço (certos)", ultimo_terco_certos)
+col5.metric("→ Right", passes_direita)
+col6.metric("← Left", passes_esquerda)
+col7.metric("Final Third Passes", ultimo_terco_certos)
 
 st.divider()
 
 col8, col9 = st.columns(2)
 
 with col8:
-    st.markdown("### Próprio campo")
-    st.metric("Precisão", f"{pc_perc:.1f}%")
-    st.write(f"Certos: {pc_certos} | Errados: {pc_errados}")
+    st.markdown("### Own Field")
+    st.metric("%Acc", f"{pc_perc:.1f}%")
+    st.write(f"Acc: {pc_certos} | Inacc: {pc_errados}")
 
 with col9:
-    st.markdown("### Campo adversário")
-    st.metric("Precisão", f"{ca_perc:.1f}%")
-    st.write(f"Certos: {ca_certos} | Errados: {ca_errados}")
+    st.markdown("### Opposite Field")
+    st.metric("%Acc", f"{ca_perc:.1f}%")
+    st.write(f"Acc: {ca_certos} | Inacc: {ca_errados}")
