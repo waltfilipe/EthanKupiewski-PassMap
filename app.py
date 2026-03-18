@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from mplsoccer import Pitch
 import pandas as pd
 import numpy as np
+from matplotlib.lines import Line2D
 
 st.set_page_config(layout="wide")
 
@@ -83,33 +84,18 @@ for i in range(0, len(coords), 2):
 df = pd.DataFrame(passes)
 
 # ==========================
-# Métricas base
+# Métricas
 # ==========================
-goal_x = 120
-goal_y = 40
+goal_x, goal_y = 120, 40
 
-def distancia_gol(x, y):
-    return np.sqrt((goal_x - x)**2 + (goal_y - y)**2)
-
-df["dist_inicio"] = distancia_gol(df.x_start, df.y_start)
-df["dist_fim"] = distancia_gol(df.x_end, df.y_end)
+df["dist_inicio"] = np.sqrt((goal_x - df.x_start)**2 + (goal_y - df.y_start)**2)
+df["dist_fim"] = np.sqrt((goal_x - df.x_end)**2 + (goal_y - df.y_end)**2)
 
 df["ganho"] = df["dist_inicio"] - df["dist_fim"]
 
 df["progressivo"] = df["ganho"] >= 10
 df["errado"] = df["numero"].isin(passes_errados)
-
-# ==========================
-# CLASSIFICAÇÕES (ESSENCIAL)
-# ==========================
 df["certo"] = ~df["errado"]
-
-df["direita"] = df["x_end"] > df["x_start"]
-df["esquerda"] = df["x_end"] < df["x_start"]
-
-df["proprio_campo"] = df["x_start"] < 60
-df["campo_adversario"] = df["x_start"] >= 60
-df["ultimo_terco"] = df["x_end"] >= 80
 
 # ==========================
 # Plot
@@ -135,20 +121,38 @@ for _, row in df.iterrows():
         width = 2.2
 
     else:
-        color = (0.5, 0.5, 0.5, 0.5)
+        color = (0.6, 0.6, 0.6, 0.6)
         width = 1.4
 
     pitch.arrows(
-        row.x_start,
-        row.y_start,
-        row.x_end,
-        row.y_end,
+        row.x_start, row.y_start,
+        row.x_end, row.y_end,
         color=color,
         width=width,
         headwidth=3,
         headlength=3,
         ax=ax
     )
+
+ax.set_title("Pass Map")
+
+# ==========================
+# LEGENDA
+# ==========================
+legend_elements = [
+    Line2D([0], [0], color=(0.2, 0.3, 1, 0.9), lw=3, label='Progressive Pass'),
+    Line2D([0], [0], color=(1, 0, 0, 0.6), lw=3, label='Unsuccessful Pass'),
+    Line2D([0], [0], color=(0.6, 0.6, 0.6, 0.6), lw=3, label='Successful Pass'),
+]
+
+ax.legend(
+    handles=legend_elements,
+    loc='upper left',
+    frameon=True,
+    facecolor='white',
+    edgecolor='black',
+    framealpha=1
+)
 
 # ==========================
 # Mostrar gráfico
@@ -169,24 +173,7 @@ perc_certos = passes_certos / total * 100
 
 prog = df[df["progressivo"]]
 prog_total = len(prog)
-prog_certos = prog["certo"].sum()
-prog_errados = prog["errado"].sum()
 perc_prog = prog_total / total * 100
-
-passes_direita = df["direita"].sum()
-passes_esquerda = df["esquerda"].sum()
-
-ultimo_terco_certos = df[df["ultimo_terco"] & df["certo"]].shape[0]
-
-pc = df[df["proprio_campo"]]
-pc_certos = pc["certo"].sum()
-pc_errados = pc["errado"].sum()
-pc_perc = pc_certos / len(pc) * 100 if len(pc) > 0 else 0
-
-ca = df[df["campo_adversario"]]
-ca_certos = ca["certo"].sum()
-ca_errados = ca["errado"].sum()
-ca_perc = ca_certos / len(ca) * 100 if len(ca) > 0 else 0
 
 # ==========================
 # DASHBOARD
@@ -199,25 +186,3 @@ col1.metric("Total passes", total)
 col2.metric("% Acc", f"{perc_certos:.1f}%")
 col3.metric("Progressive Passes", prog_total)
 col4.metric("% Progressive", f"{perc_prog:.1f}%")
-
-st.divider()
-
-col5, col6, col7 = st.columns(3)
-
-col5.metric("→ Right", passes_direita)
-col6.metric("← Left", passes_esquerda)
-col7.metric("Final Third Passes", ultimo_terco_certos)
-
-st.divider()
-
-col8, col9 = st.columns(2)
-
-with col8:
-    st.markdown("### Own Field")
-    st.metric("% Acc", f"{pc_perc:.1f}%")
-    st.write(f"Acc: {pc_certos} | Inacc: {pc_errados}")
-
-with col9:
-    st.markdown("### Opposite Field")
-    st.metric("% Acc", f"{ca_perc:.1f}%")
-    st.write(f"Acc: {ca_certos} | Inacc: {ca_errados}")
