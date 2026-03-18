@@ -147,6 +147,12 @@ for _, row in df.iterrows():
 
 ax.set_title("Pass Map")
 
+ # Attack Arrow
+    ax.annotate('', xy=(70, 83), xytext=(50, 83),
+                arrowprops=dict(arrowstyle='->', color='#4a4a4a', lw=1.2))
+    ax.text(60, 86, "Attack Direction", ha='center', va='center', 
+            fontsize=8, color='#4a4a4a', fontweight='bold')
+
 # ==========================
 # LEGENDA
 # ==========================
