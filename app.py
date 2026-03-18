@@ -98,6 +98,17 @@ df["errado"] = df["numero"].isin(passes_errados)
 df["certo"] = ~df["errado"]
 
 # ==========================
+# CLASSIFICAÇÕES (necessárias)
+# ==========================
+df["direita"] = df["x_end"] > df["x_start"]
+df["esquerda"] = df["x_end"] < df["x_start"]
+
+df["proprio_campo"] = df["x_start"] < 60
+df["campo_adversario"] = df["x_start"] >= 60
+
+df["ultimo_terco"] = df["x_end"] >= 80
+
+# ==========================
 # Plot
 # ==========================
 pitch = Pitch(
