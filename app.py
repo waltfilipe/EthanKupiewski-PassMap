@@ -163,7 +163,7 @@ with col2:
     st.pyplot(fig)
 
 # ==========================
-# ESTATÍSTICAS (IGUAL AO OUTRO)
+# ESTATÍSTICAS
 # ==========================
 total = len(df)
 
