@@ -6,7 +6,7 @@ import numpy as np
 
 st.set_page_config(layout="wide")
 
-st.title("Pass Map + Estatísticas")
+st.title("Pass Map + Statistics")
 
 # ==========================
 # Coordenadas
@@ -191,14 +191,14 @@ ca_perc = ca_certos / len(ca) * 100 if len(ca) > 0 else 0
 # ==========================
 # DASHBOARD
 # ==========================
-st.subheader("📊 Estatísticas de Passe")
+st.subheader("📊 Pass Statistics")
 
 col1, col2, col3, col4 = st.columns(4)
 
 col1.metric("Total passes", total)
-col2.metric("%Acc", f"{perc_certos:.1f}%")
+col2.metric("% Acc", f"{perc_certos:.1f}%")
 col3.metric("Progressive Passes", prog_total)
-col4.metric("% Progressivos", f"{perc_prog:.1f}%")
+col4.metric("% Progressive", f"{perc_prog:.1f}%")
 
 st.divider()
 
@@ -214,10 +214,10 @@ col8, col9 = st.columns(2)
 
 with col8:
     st.markdown("### Own Field")
-    st.metric("%Acc", f"{pc_perc:.1f}%")
+    st.metric("% Acc", f"{pc_perc:.1f}%")
     st.write(f"Acc: {pc_certos} | Inacc: {pc_errados}")
 
 with col9:
     st.markdown("### Opposite Field")
-    st.metric("%Acc", f"{ca_perc:.1f}%")
+    st.metric("% Acc", f"{ca_perc:.1f}%")
     st.write(f"Acc: {ca_certos} | Inacc: {ca_errados}")
