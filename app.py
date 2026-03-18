@@ -144,5 +144,72 @@ for _, row in df.iterrows():
 # ==========================
 col1, col2, col3 = st.columns([1,2,1])
 
+# ==========================
+# ESTATÍSTICAS
+# ==========================
+
+total = len(df)
+
+passes_certos = df["certo"].sum()
+passes_errados = df["errado"].sum()
+perc_certos = passes_certos / total * 100
+
+prog = df[df["progressivo"]]
+prog_total = len(prog)
+prog_certos = prog["certo"].sum()
+prog_errados = prog["errado"].sum()
+perc_prog = prog_total / total * 100
+
+passes_direita = df["direita"].sum()
+passes_esquerda = df["esquerda"].sum()
+
+ultimo_terco_certos = df[df["ultimo_terco"] & df["certo"]].shape[0]
+
+pc = df[df["proprio_campo"]]
+pc_certos = pc["certo"].sum()
+pc_errados = pc["errado"].sum()
+pc_perc = pc_certos / len(pc) * 100 if len(pc) > 0 else 0
+
+ca = df[df["campo_adversario"]]
+ca_certos = ca["certo"].sum()
+ca_errados = ca["errado"].sum()
+ca_perc = ca_certos / len(ca) * 100 if len(ca) > 0 else 0
+
+
+# ==========================
+# DASHBOARD
+# ==========================
+
+st.subheader("📊 Estatísticas de Passe")
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Total de passes", total)
+col2.metric("Precisão", f"{perc_certos:.1f}%")
+col3.metric("Progressivos", prog_total)
+col4.metric("% Progressivos", f"{perc_prog:.1f}%")
+
+st.divider()
+
+col5, col6, col7 = st.columns(3)
+
+col5.metric("→ Direita", passes_direita)
+col6.metric("← Esquerda", passes_esquerda)
+col7.metric("Último terço (certos)", ultimo_terco_certos)
+
+st.divider()
+
+col8, col9 = st.columns(2)
+
+with col8:
+    st.markdown("### Próprio campo")
+    st.metric("Precisão", f"{pc_perc:.1f}%")
+    st.write(f"Certos: {pc_certos} | Errados: {pc_errados}")
+
+with col9:
+    st.markdown("### Campo adversário")
+    st.metric("Precisão", f"{ca_perc:.1f}%")
+    st.write(f"Certos: {ca_certos} | Errados: {ca_errados}")
+
 with col2:
     st.pyplot(fig)
